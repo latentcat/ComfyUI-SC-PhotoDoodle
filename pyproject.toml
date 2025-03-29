@@ -1,0 +1,14 @@
+[project]
+name = "sc-photodoodle"
+description = "对 photodoodle 的 comfyui 原生实现"
+version = "1.0.1"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/latentcat/ComfyUI-SC-PhotoDoodle"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "shichen"
+DisplayName = "ComfyUI-SC-PhotoDoodle"
+Icon = ""
