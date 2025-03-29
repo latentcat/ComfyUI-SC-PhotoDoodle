@@ -6,7 +6,7 @@ This is a custom node for ComfyUI that implements PhotoDoodle functionality, all
 
 This project is reimplemented based on [PhotoDoodle](https://github.com/vpdonato/PhotoDoodle), providing a more integrated experience for ComfyUI.
 
-![PhotoDoodle Example](https://raw.githubusercontent.com/vpdonato/PhotoDoodle/main/examples/example.jpg)
+![PhotoDoodle Example](./imgs/ep1.jpg)
 
 ## Example Workflows
 
@@ -49,7 +49,7 @@ git clone https://github.com/your-username/ComfyUI_SC_PhotoDoodle.git
 
 本项目基于 [PhotoDoodle](https://github.com/vpdonato/PhotoDoodle) 重新实现，为 ComfyUI 提供了更加集成的体验。
 
-![PhotoDoodle 示例](https://raw.githubusercontent.com/vpdonato/PhotoDoodle/main/examples/example.jpg)
+![PhotoDoodle 示例](./imgs/ep1.jpg)
 
 ## 示例工作流
 
