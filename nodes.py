@@ -4,6 +4,11 @@ import comfy.utils
 import latent_preview
 import comfy.model_management
 from comfy_extras.nodes_custom_sampler import SamplerCustomAdvanced
+import torch
+import torch.nn.functional as F
+from PIL import Image
+import numpy as np
+import logging
 
 class PhotoDoodleSamplerAdvanced(SamplerCustomAdvanced):
     """
@@ -48,9 +53,15 @@ class PhotoDoodleSamplerAdvanced(SamplerCustomAdvanced):
         cond_latent = None
         if condition_image is not None:
             cond_latent = condition_image["samples"]
+            
+            # 确保条件图像在与潜在图像相同的设备上
+            # 一次性移动到 GPU，避免每次推理都移动
+            target_device = comfy.model_management.get_torch_device()
+            if cond_latent.device != target_device:
+                logging.info(f"将条件图像从 {cond_latent.device} 移动到 {target_device}")
+                cond_latent = cond_latent.to(target_device)
         
-        # 处理噪声掩码 - 使用默认值
-        # 如果用户提供了掩码，我们仍然会使用它
+        # 创建去噪掩码 - 只对非条件部分应用去噪
         noise_mask = None
         if "noise_mask" in latent:
             noise_mask = latent["noise_mask"]
@@ -59,38 +70,93 @@ class PhotoDoodleSamplerAdvanced(SamplerCustomAdvanced):
         x0_output = {}
         callback = latent_preview.prepare_callback(guider.model_patcher, sigmas.shape[-1] - 1, x0_output)
 
-        # 准备额外的关键字参数 - 使用默认值
+        # 准备额外的关键字参数
         extra_kwargs = {
             "condition_image": cond_latent,
             "use_clone_pe": use_clone_pe,
         }
         
-        # 禁用进度条（如果需要）
-        disable_pbar = not comfy.utils.PROGRESS_BAR_ENABLED
+        # 生成噪声张量
+        noise_tensor = noise.generate_noise(latent)
         
-        # 调用采样器，传递额外参数
+        # 调用采样器
         samples = guider.sample(
-            noise.generate_noise(latent), 
+            noise_tensor,
             latent_image, 
             sampler, 
             sigmas, 
             denoise_mask=noise_mask, 
             callback=callback, 
-            disable_pbar=disable_pbar, 
+            disable_pbar=not comfy.utils.PROGRESS_BAR_ENABLED, 
             seed=noise.seed,
             **extra_kwargs
         )
-        samples = samples.to(comfy.model_management.intermediate_device())
-
-        # 准备输出
-        out = latent.copy()
-        out["samples"] = samples
         
-        # 处理去噪输出
-        if "x0" in x0_output:
-            out_denoised = latent.copy()
-            out_denoised["samples"] = guider.model_patcher.model.process_latent_out(x0_output["x0"].cpu())
-        else:
-            out_denoised = out
+        latent["samples"] = samples
+        return (latent, x0_output.get("x0", None))
+
+class PhotoDoodleCrop:
+    """
+    图片裁切节点：在保持原图比例的情况下，尽可能最大化地裁切出目标宽高的区域
+    如果原图尺寸不足，则放大至目标尺寸，保持比例且不留白
+    """
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "width": ("INT", {"default": 512, "min": 64, "max": 8192, "step": 8}),
+                "height": ("INT", {"default": 512, "min": 64, "max": 8192, "step": 8}),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "crop_image"
+    CATEGORY = "image/processing"
+
+    def crop_image(self, image, width, height):
+        """
+        裁切图片，保持比例，最大化填充目标区域，无留白
+        
+        参数:
+            image: 输入图片张量 [B, H, W, C]
+            width: 目标宽度
+            height: 目标高度
             
-        return (out, out_denoised) 
+        返回:
+            裁切后的图片张量 [B, height, width, C]
+        """
+        # 转换为numpy处理
+        result = []
+        for img in image:
+            img_np = img.cpu().numpy()
+            
+            # 获取原始尺寸
+            orig_h, orig_w = img_np.shape[0], img_np.shape[1]
+            
+            # 计算目标比例和原始比例
+            target_ratio = width / height
+            orig_ratio = orig_w / orig_h
+            
+            # 策略：先调整比例（缩小或裁切），再缩放到目标尺寸
+            if orig_ratio > target_ratio:
+                # 原图更宽，需要调整宽度
+                new_w = int(orig_h * target_ratio)
+                offset_w = (orig_w - new_w) // 2
+                adjusted = img_np[:, offset_w:offset_w+new_w, :]
+            else:
+                # 原图更高，需要调整高度
+                new_h = int(orig_w / target_ratio)
+                offset_h = (orig_h - new_h) // 2
+                adjusted = img_np[offset_h:offset_h+new_h, :]
+            
+            # 调整后的图像缩放到目标尺寸
+            pil_img = Image.fromarray((adjusted * 255).astype(np.uint8))
+            resized_pil = pil_img.resize((width, height), Image.LANCZOS)
+            resized_np = np.array(resized_pil).astype(np.float32) / 255.0
+            
+            result.append(torch.from_numpy(resized_np))
+        
+        # 堆叠所有处理后的图片
+        return (torch.stack(result),) 
