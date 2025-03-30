@@ -4,7 +4,7 @@ This is a custom node for ComfyUI that implements PhotoDoodle functionality, all
 
 ## Original Project Reference
 
-This project is reimplemented based on [PhotoDoodle](https://github.com/vpdonato/PhotoDoodle), providing a more integrated experience for ComfyUI.
+This project is reimplemented based on [PhotoDoodle](https://github.com/showlab/PhotoDoodle), providing a more integrated experience for ComfyUI.
 
 ![PhotoDoodle Example](./imgs/ep1.jpg)
 
