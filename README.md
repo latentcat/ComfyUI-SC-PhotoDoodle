@@ -41,7 +41,15 @@ git clone https://github.com/your-username/ComfyUI_SC_PhotoDoodle.git
 
 ## Prompt 
 add the trigger word of the selected lora at the end of the prompt, such as sksedgeeffect, which needs to be added at the end by sksedgeeffect
----
+
+## Lora model
+
+| Lora name | Function | Trigger word |
+|-----------|----------|--------------|
+| [sksmonstercalledlulu](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksmonstercalledlulu.safetensors) | PhotoDoodle model trained on Cartoon monster dataset | by sksmonstercalledlulu |
+| [sksmagiceffects](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksmagiceffects.safetensors) | PhotoDoodle model trained on 3D effects dataset | by sksmagiceffects |
+| [skspaintingeffects](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/skspaintingeffects.safetensors) | PhotoDoodle model trained on Flowing color blocks dataset | by skspaintingeffects |
+| [sksedgeeffect](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksedgeeffect.safetensors) | PhotoDoodle model trained on Hand-drawn outline dataset | by sksedgeeffect |
 
 # ComfyUI_SC_PhotoDoodle
 
@@ -86,3 +94,12 @@ git clone https://github.com/your-username/ComfyUI_SC_PhotoDoodle.git
 
 ## 提示词
 添加提示词的时候，根据选择的lora，在最后添加对应的触发词，如 sksedgeeffect 需要在末尾添加 by sksedgeeffect
+
+## LoRA 模型列表
+
+| LoRA名字 | 功能 | 触发词 |
+|---------|------|--------|
+| [sksmonstercalledlulu](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksmonstercalledlulu.safetensors) | PhotoDoodle model trained on Cartoon monster dataset | by sksmonstercalledlulu |
+| [sksmagiceffects](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksmagiceffects.safetensors) | PhotoDoodle model trained on 3D effects dataset | by sksmagiceffects |
+| [skspaintingeffects](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/skspaintingeffects.safetensors) | PhotoDoodle model trained on Flowing color blocks dataset | by skspaintingeffects |
+| [sksedgeeffect](https://huggingface.co/nicolaus-huang/PhotoDoodle/blob/main/sksedgeeffect.safetensors) | PhotoDoodle model trained on Hand-drawn outline dataset | by sksedgeeffect |
