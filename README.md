@@ -39,6 +39,8 @@ git clone https://github.com/your-username/ComfyUI_SC_PhotoDoodle.git
 3. Use the PhotoDoodleEdit node for editing
 4. Adjust parameters to achieve the desired effect
 
+## Prompt 
+add the trigger word of the selected lora at the end of the prompt, such as sksedgeeffect, which needs to be added at the end by sksedgeeffect
 ---
 
 # ComfyUI_SC_PhotoDoodle
@@ -81,3 +83,6 @@ git clone https://github.com/your-username/ComfyUI_SC_PhotoDoodle.git
 2. 准备一张原始图像和一张涂鸦图像
 3. 使用 PhotoDoodleEdit 节点进行编辑
 4. 调整参数以获得理想效果
+
+## 提示词
+添加提示词的时候，根据选择的lora，在最后添加对应的触发词，如 sksedgeeffect 需要在末尾添加 by sksedgeeffect
