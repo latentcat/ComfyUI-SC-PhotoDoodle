@@ -199,3 +199,43 @@ class PhotoDoodleCrop:
 
         # 堆叠所有处理后的图片
         return (torch.stack(result),)
+
+
+class PhotoDoodleParams:
+    """
+    参数传递节点：将输入的参数原样传递到输出
+    用于在ComfyUI工作流中连接和保存常用参数
+    """
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "width": ("INT", {"default": 512, "min": 64, "max": 8192, "step": 8}),
+                "height": ("INT", {"default": 512, "min": 64, "max": 8192, "step": 8}),
+                "cfg": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 100.0, "step": 0.1}),
+                "prompt": ("STRING", {"multiline": True, "default": ""}),
+            },
+        }
+
+    RETURN_TYPES = ("INT", "INT", "INT", "FLOAT", "STRING")
+    RETURN_NAMES = ("seed", "width", "height", "cfg", "prompt")
+    FUNCTION = "pass_params"
+    CATEGORY = "utils/parameters"
+
+    def pass_params(self, seed: int, width: int, height: int, cfg: float, prompt: str):
+        """
+        将输入的参数原样传递到输出
+        
+        参数:
+            seed: 随机种子
+            width: 图像宽度
+            height: 图像高度
+            cfg: CFG引导强度
+            prompt: 提示词文本
+            
+        返回:
+            原样输出的参数元组
+        """
+        return (seed, width, height, cfg, prompt)
